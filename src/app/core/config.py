@@ -17,6 +17,10 @@ class Settings(BaseSettings):
 
     ALLOWED_ORIGINS: Union[str, List[str]] = Field(default_factory=list, description="CORS origins")
 
+    # Agent SDK Configuration
+    AGENT_SDK_TIMEOUT: int = Field(30, description="Agent SDK call timeout in seconds")
+    AGENT_SDK_RETRY_COUNT: int = Field(3, description="Number of retry attempts for SDK calls")
+
     @field_validator("ALLOWED_ORIGINS", mode="before")
     @classmethod
     def split_origins(cls, v):

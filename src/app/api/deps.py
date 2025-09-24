@@ -5,6 +5,9 @@ from typing import Annotated, Any, Dict
 from app.core.config import get_settings
 from app.core.security import decode_token
 from app.models.schemas import User
+from app.services.agent_service import AgentService
+from app.services.factory import create_agent_service
+from app.services.mock_sdk import MockAgentSDK
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
@@ -29,3 +32,10 @@ def require_roles(*required: str):
         return user
 
     return checker
+
+
+def get_agent_service() -> AgentService:
+    """Get configured AgentService instance."""
+    # For now, use mock SDK. In production, this would be replaced with real SDK
+    mock_sdk = MockAgentSDK()
+    return create_agent_service(mock_sdk)

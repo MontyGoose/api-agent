@@ -9,6 +9,7 @@ from app.api.routes.health import router as health_router
 from app.api.routes.v1.hello import router as hello_router
 from app.api.routes.v1.items import router as items_router
 from app.api.routes.v1.auth import router as auth_router
+from app.api.routes.v1.agents import router as agents_router
 
 
 @asynccontextmanager
@@ -44,5 +45,6 @@ def create_app() -> FastAPI:
     app.include_router(auth_router)
     app.include_router(hello_router)
     app.include_router(items_router)
+    app.include_router(agents_router)
 
     return app
