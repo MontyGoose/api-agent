@@ -7,7 +7,7 @@ from app.core.security import decode_token
 from app.models.schemas import User
 from app.services.agent_service import AgentService
 from app.services.factory import create_agent_service
-from app.services.mock_sdk import MockAgentSDK
+from app.services.sdk_factory import AgentSDKFactory
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
@@ -35,7 +35,10 @@ def require_roles(*required: str):
 
 
 def get_agent_service() -> AgentService:
-    """Get configured AgentService instance."""
-    # For now, use mock SDK. In production, this would be replaced with real SDK
-    mock_sdk = MockAgentSDK()
-    return create_agent_service(mock_sdk)
+    """Get configured AgentService instance with appropriate SDK implementation."""
+    settings = get_settings()
+    
+    # Use factory to create appropriate SDK implementation
+    sdk = AgentSDKFactory.create_sdk(settings)
+    
+    return create_agent_service(sdk)

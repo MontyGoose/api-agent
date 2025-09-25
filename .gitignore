@@ -31,3 +31,4 @@ __pypackages__/
 *.pid
 *.db
 *.sqlite
+.kiro/steering/python sdk.md

@@ -13,6 +13,9 @@ from app.services.exceptions import (
     AgentNotFoundError,
     SDKTimeoutError,
     InvalidAgentIdError,
+    AuthenticationError,
+    SessionError,
+    SDKConfigurationError,
 )
 
 logger = structlog.get_logger(__name__)
@@ -87,6 +90,15 @@ class AgentService:
             logger.error("SDK timeout", agent_id=agent_id, timeout=e.timeout_seconds)
             raise self._handle_timeout_error(e)
             
+        except (AuthenticationError, SessionError, SDKConfigurationError) as e:
+            logger.error(
+                "SDK authentication/configuration error", 
+                agent_id=agent_id, 
+                error=str(e),
+                error_type=type(e).__name__
+            )
+            raise self._handle_sdk_error(e)
+            
         except SDKError as e:
             logger.error(
                 "SDK error", 
@@ -160,8 +172,8 @@ class AgentService:
             except asyncio.TimeoutError:
                 raise SDKTimeoutError(self.timeout_seconds)
                 
-            except AgentNotFoundError:
-                # Don't retry for not found errors
+            except (AgentNotFoundError, AuthenticationError, SessionError, InvalidAgentIdError, SDKConfigurationError):
+                # Don't retry for these errors - they won't succeed on retry
                 raise
                 
             except Exception as e:
